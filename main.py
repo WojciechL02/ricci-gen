@@ -10,13 +10,13 @@ from src.architecture import GeometricFlowNet, MetricDecoder
 
 
 def main():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
     # Hyperparams
-    batch_size = 64
+    batch_size = 128
     lr = 2e-4
-    epochs = 1
+    epochs = 10
 
     transform = transforms.Compose([transforms.ToTensor()])
     dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
@@ -33,9 +33,10 @@ def main():
     writer = SummaryWriter(log_dir="runs/grfm_v2_experiment")
     print("TensorBoard Writer initialized. Run 'tensorboard --logdir runs' to view.")
 
+    print("Starting GRFM v2.0 Joint Training...")
     train(flow_net, decoder, opt_flow, opt_decoder, batch_size, device, epochs, loader, writer)
-
     writer.close()
+    print("Training Complete!")
 
 
 if __name__ == "__main__":

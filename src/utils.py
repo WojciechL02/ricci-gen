@@ -106,7 +106,6 @@ def train(flow_net, decoder, opt_flow, opt_decoder, batch_size, device, epochs, 
     g_flat_template[:, 0, :, :] = 1.0  # g11
     g_flat_template[:, 1, :, :] = 1.0  # g22
 
-    print("Starting GRFM v2.0 Joint Training...")
     global_step = 0
     for epoch in range(epochs):
         for batch_idx, (images, _) in enumerate(loader):
@@ -156,14 +155,8 @@ def train(flow_net, decoder, opt_flow, opt_decoder, batch_size, device, epochs, 
                       f"| Flow Loss: {loss_flow.item():.4f} | Decode Loss: {loss_decode.item():.4f}")
 
             global_step += 1
-            if batch_idx == 100:
-                break
 
-        print(f"Epoch {epoch} complete. Generating test images for TensorBoard...")
         generate_and_log_images(flow_net, decoder, writer, epoch, device, num_steps=25)
-
         os.makedirs("checkpoints", exist_ok=True)
         torch.save(flow_net.state_dict(), "checkpoints/grfm_v2_flow.pth")
         torch.save(decoder.state_dict(), "checkpoints/grfm_v2_decoder.pth")
-
-    print("Training Complete!")
